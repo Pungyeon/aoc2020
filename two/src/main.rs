@@ -1,5 +1,3 @@
-use std::error::Error;
-
 struct Constraint {
     lower: usize,
     upper: usize,
@@ -13,6 +11,13 @@ impl Constraint {
             .count();
 
         seen >= self.lower && seen <= self.upper
+    }
+
+    fn is_valid_part_two(&self, password: String) -> bool {
+        let left = password.as_bytes()[self.lower-1] as char == self.letter;
+        let right = password.as_bytes()[self.upper-1] as char == self.letter;
+
+        (left || right) && (left != right)
     }
 }
 
@@ -42,7 +47,7 @@ impl<'a> Parser<'a> {
         self.index += 1;
 
         constraint.letter = self.line.as_bytes()[self.index] as char;
-        self.index += 2;
+        self.index += 3;
 
         constraint
     }
@@ -55,7 +60,7 @@ impl<'a> Parser<'a> {
             }
             self.index += 1;
         }
-        "".to_string()
+        panic!("could not find the thing");
     }
 }
 
@@ -69,7 +74,28 @@ fn find_valid() -> usize {
     }).count()
 }
 
+fn find_valid_part_two() -> usize {
+    std::fs::read_to_string("input.txt").unwrap().lines().filter(|line| {
+        is_valid_part_two(line)
+    }).count()
+}
+
+fn is_valid_part_two(line: &str) -> bool {
+    let mut parser = Parser::new(line);
+    let constraint = parser.constraint();
+    let password = line[parser.index..].to_string();
+
+    constraint.is_valid_part_two(password)
+}
 
 fn main() {
     println!("Valid Passwords: {}", find_valid());
+    println!("Valid Passwords: {}", find_valid_part_two());
+}
+
+#[test]
+fn test_part_two() {
+    assert_eq!(is_valid_part_two("17-18 z: zzzzzzzzzzzzzzzzjz"), true);
+    assert_eq!(is_valid_part_two("2-9 c: ccccccccc"), false);
+    assert_eq!(is_valid_part_two("1-3 a: abcde"), true);
 }
