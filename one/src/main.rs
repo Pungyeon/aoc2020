@@ -36,10 +36,10 @@ fn get_value() -> Result<i64, ValueError> {
 }
 
 fn get_values() -> Result<i64, ValueError> {
-    let mut values : Vec<i64> = Vec::new();
-    for line in fs::read_to_string("input.txt")?.lines() {
-        values.push(line.parse()?);
-    }
+    let values: Vec<i64> = fs::read_to_string("input.txt")?
+        .lines()
+        .map(|line| line.parse().unwrap() )
+        .collect();
 
     for i in 0..values.len() {
         let a = values.get(i).unwrap();
