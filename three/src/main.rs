@@ -1,8 +1,16 @@
 
 fn main() {
-    println!("trees: {}",
-            Map::new(std::fs::read_to_string("input.txt").unwrap())
-                .count_trees(Slope{x: 3, y: 1}));
+    let map = Map::new(std::fs::read_to_string("input.txt").unwrap());
+    println!("trees: {}", map.count_trees(Slope{x: 3, y: 1}));
+    println!("slope_products: {}", map.slope_products(
+        vec![
+            Slope{ x: 1, y: 1},
+            Slope{ x: 3, y: 1},
+            Slope{ x: 5, y: 1},
+            Slope{ x: 7, y: 1},
+            Slope{ x: 1, y: 2},
+        ]
+    ));
 }
 
 #[derive(Debug, PartialOrd, PartialEq)]
@@ -32,6 +40,18 @@ impl Map {
             m.map.push(ml);
         }
         m
+    }
+
+    fn slope_products(&self, slopes: Vec<Slope>) -> i64 {
+        let values : Vec<i64> = slopes.iter()
+            .cloned()
+            .map(|slope| self.count_trees(slope)).collect();
+
+        let mut total = 1;
+        for value in values {
+            total *= value;
+        }
+        total
     }
 
     fn count_trees(&self, slope: Slope) -> i64 {
@@ -67,6 +87,7 @@ impl Map {
     }
 }
 
+#[derive(Clone)]
 struct Slope {
     x: usize,
     y: usize,
@@ -92,4 +113,20 @@ fn test_parse_input() {
     assert_eq!(m.get(0, 0), Some(&Coordinate::NONE));
     assert_eq!(m.get(6, 2), Some(&Coordinate::TREE));
     assert_eq!(m.count_trees(Slope{x: 3, y: 1}), 7);
+
+    // PART TWO
+    assert_eq!(m.count_trees(Slope{ x: 1, y: 1 }), 2);
+    assert_eq!(m.count_trees(Slope{ x: 5, y: 1 }), 3);
+    assert_eq!(m.count_trees(Slope{ x: 7, y: 1 }), 4);
+    assert_eq!(m.count_trees(Slope{ x: 1, y: 2 }), 2);
+
+    assert_eq!(m.slope_products(
+        vec![
+        Slope{ x: 1, y: 1},
+        Slope{ x: 3, y: 1},
+        Slope{ x: 5, y: 1},
+        Slope{ x: 7, y: 1},
+        Slope{ x: 1, y: 2},
+    ]), 336);
+
 }
