@@ -51,19 +51,15 @@ impl Map {
                 break;
             }
             x += slope.x;
-            if x > self.map[0].len() {
+            if x >= self.map[0].len() {
                 x = x % self.map[0].len();
             }
             y += slope.y;
-            if y > self.map.len() {
+            if y >= self.map.len() {
                 break;
             }
         };
         trees
-    }
-
-    fn is_tree(&self, x: usize, y: usize) -> bool {
-        false
     }
 
     fn get(&self, x: usize, y: usize) -> Option<&Coordinate> {
